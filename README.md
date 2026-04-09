@@ -29,6 +29,7 @@ The main published flow is:
 
 Detailed Telegram pipeline behavior is documented in `docs/telegram_global_pipeline.md`.
 The Frozen CLIP model details and training reference is in `docs/frozen_clip_model.md`.
+Hands-on operation flow is in `SKILL.md`.
 
 ## Command Routing Matrix
 
