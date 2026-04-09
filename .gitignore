@@ -1,0 +1,114 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+
+# Environment and local secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Data, sessions, and databases
+data/*
+!data/.gitkeep
+*.session
+*.session-journal
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.db
+*.db-*
+*.sqlite
+*.sqlite*
+
+# Local config and datasets
+configs/*.local.yaml
+configs/config.local.yaml
+labels.json
+labels.local.json
+labels.json.bkk
+*.bkk
+*.bak
+
+# Generated training outputs
+output/
+outputs/
+debug/stage2/
+
+# Logs
+*.log
+logs/
+network-requests.log
+training_output.log
+webui/frontend_log.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+.sisyphus/
+debug_dimensions.py
+progress.md
+scripts/analyze_dataset.py
+scripts/analyze_dataset_simple.py
+scripts/check_corrupted.py
+scripts/test_frozen_clip_training.py
+scripts/test_mock_training.py
+scripts/wait_and_rebucket_telegram.sh
+
+# Test output images (root level)
+/*.png
+
+# Temp files
+*.cjs
+track_test*.js
+track_test*.html
+
+# Embedded repos
+heretic/
+heretic_model/
+
+# Test data
+test_data/
+test_output/
+webui/test-results/
+checkpoints/*/
+
+# Node
+node_modules/
+webui/node_modules/
+webui/dist/

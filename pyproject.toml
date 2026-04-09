@@ -1,0 +1,10 @@
+[project]
+name = "mediaflusher"
+version = "0.1.0"
+description = "Frozen CLIP media scoring and Telegram curation toolkit"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+
+[project.optional-dependencies]
+dev = ["pytest", "black", "ruff"]

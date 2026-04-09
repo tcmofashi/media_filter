@@ -1,0 +1,46 @@
+# MediaFlusher Configuration
+
+model:
+  checkpoint: "checkpoints/checkpoint_best.pt"
+  device: "auto"
+  clip_model: "openai/clip-vit-large-patch14"
+
+video:
+  max_duration: 300  # 5 minutes in seconds
+  sample_frames: 12
+
+api:
+  max_batch_size: 50
+  request_timeout: 300
+
+storage:
+  database_path: "data/mediaflusher.db"
+
+telegram:
+  # Optional local-only overrides belong in configs/config.local.yaml.
+  # Example:
+  # proxy: "http://127.0.0.1:7890"
+  # legacy_session: "~/telegram_media_downloader/sessions/media_downloader.session"
+  session_name: "mediaflusher_tg"
+  session_dir: "data/tg_session"
+  target_root: "data/tg_target"
+  cache_root: "data/tg_cache"
+  flat_links_root: "data/tg_flat_links"
+  state_path: "data/tg_downloader_state.json"
+  db: "data/mediaflusher.db"
+  checkpoint: "checkpoints/checkpoint_best.pt"
+  device: "auto"
+  target_mode: "hardlink"
+  discover_chat_types: "channel,supergroup,group,private"
+  log_every: 25
+  chat_batch_size: 150
+  message_concurrency: 3
+  cache_max_items: 0
+  score_concurrency: 2
+  chat_idle_seconds: 1.0
+  round_idle_seconds: 15.0
+  continuous: true
+  breadth_rounds: 3
+  focus_top_chats: 5
+  focus_min_scored: 5
+  min_score: 7.0
