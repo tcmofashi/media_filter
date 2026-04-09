@@ -11,7 +11,7 @@ import re
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 DEFAULT_ROOT = PROJECT_ROOT / "data/tg_target"
-DEFAULT_DB_PATH = PROJECT_ROOT / "data/mediaflusher.db"
+DEFAULT_DB_PATH = PROJECT_ROOT / "data/media_filter.db"
 DEFAULT_CHECKPOINT = PROJECT_ROOT / "checkpoints/checkpoint_best.pt"
 SCORE_PREFIX_PATTERN = re.compile(r"^\d+(?:\.\d+)?_")
 

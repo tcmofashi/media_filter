@@ -1,4 +1,4 @@
-# MediaFlusher WebUI
+# MediaFilter WebUI
 
 This is the shipped frontend for the public baseline pipeline.
 

@@ -20,7 +20,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from src.models.frozen_clip_engine import FrozenClipEngine
 
 DEFAULT_ROOT = PROJECT_ROOT / "data/tg_target"
-DEFAULT_DB_PATH = PROJECT_ROOT / "data/mediaflusher.db"
+DEFAULT_DB_PATH = PROJECT_ROOT / "data/media_filter.db"
 DEFAULT_CHECKPOINT = PROJECT_ROOT / "checkpoints/checkpoint_best.pt"
 GENERATED_ENTRY_PATTERN = re.compile(r"^\d+(?:\.\d+)?_")
 SKIPPED_DIR_NAMES = {"score_links"}

@@ -488,7 +488,7 @@ A: 当前使用 `openai/clip-vit-large-patch14` (768-dim)。如需更换：
 ## 文件结构
 
 ```
-mediaflusher/
+media_filter/
 ├── src/
 │   ├── models/
 │   │   └── frozen_clip_engine.py    # 推理引擎

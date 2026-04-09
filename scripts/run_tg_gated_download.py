@@ -19,7 +19,7 @@ DEFAULT_MEDIA_ROOT = PROJECT_ROOT / "data"
 DEFAULT_TARGET_ROOT = DEFAULT_MEDIA_ROOT / "tg_target"
 DEFAULT_CACHE_ROOT = DEFAULT_MEDIA_ROOT / "tg_cache"
 DEFAULT_FLAT_LINKS_ROOT = DEFAULT_MEDIA_ROOT / "tg_flat_links"
-DEFAULT_DB_PATH = PROJECT_ROOT / "data/mediaflusher.db"
+DEFAULT_DB_PATH = PROJECT_ROOT / "data/media_filter.db"
 DEFAULT_STATE_PATH = PROJECT_ROOT / "data/tg_downloader_state.json"
 DEFAULT_SESSION_DIR = PROJECT_ROOT / "data/tg_session"
 DEFAULT_LEGACY_CONFIG = LEGACY_ROOT / "config.yaml"
@@ -320,7 +320,7 @@ def main() -> int:
         "TELEGRAM_SESSION_STRING",
     )
     session_name = get_config_value(args.session_name, project_config, "session_name") or (
-        legacy.session_path.stem if legacy.session_path is not None else "mediaflusher_tg"
+        legacy.session_path.stem if legacy.session_path is not None else "media_filter_tg"
     )
 
     if api_id is None:

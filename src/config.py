@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     request_timeout: int = 300
 
     # Storage settings
-    database_path: str = "data/mediaflusher.db"
+    database_path: str = "data/media_filter.db"
 
     # Media file handling settings
     allowed_paths: list[str] = ["/media", "/home", "/data"]

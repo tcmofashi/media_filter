@@ -1,4 +1,4 @@
-# MediaFlusher Configuration
+# MediaFilter Configuration
 
 model:
   checkpoint: "checkpoints/checkpoint_best.pt"
@@ -14,20 +14,20 @@ api:
   request_timeout: 300
 
 storage:
-  database_path: "data/mediaflusher.db"
+  database_path: "data/media_filter.db"
 
 telegram:
   # Optional local-only overrides belong in configs/config.local.yaml.
   # Example:
   # proxy: "http://127.0.0.1:7890"
   # legacy_session: "~/telegram_media_downloader/sessions/media_downloader.session"
-  session_name: "mediaflusher_tg"
+  session_name: "media_filter_tg"
   session_dir: "data/tg_session"
   target_root: "data/tg_target"
   cache_root: "data/tg_cache"
   flat_links_root: "data/tg_flat_links"
   state_path: "data/tg_downloader_state.json"
-  db: "data/mediaflusher.db"
+  db: "data/media_filter.db"
   checkpoint: "checkpoints/checkpoint_best.pt"
   device: "auto"
   target_mode: "hardlink"

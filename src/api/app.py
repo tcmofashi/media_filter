@@ -45,7 +45,7 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     """Create and configure FastAPI application"""
     app = FastAPI(
-        title="MediaFlusher API",
+        title="MediaFilter API",
         description="Frozen CLIP media scoring and Telegram curation API",
         version="0.1.0",
         lifespan=lifespan,

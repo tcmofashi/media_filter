@@ -27,8 +27,8 @@
 - 目标目录：`data/tg_target`
 - 本地 session：`data/tg_session`
 - 本地状态：`data/tg_downloader_state.json`
-- 推理缓存库：`data/mediaflusher.db`
-- 默认 session 配置：`configs/config.yaml -> telegram.session_name = mediaflusher_tg`
+- 推理缓存库：`data/media_filter.db`
+- 默认 session 配置：`configs/config.yaml -> telegram.session_name = media_filter_tg`
 
 这就是两层文件缓存：
 
@@ -43,14 +43,14 @@
 都存在，默认不需要再手填 Telegram 参数：
 
 ```bash
-cd /path/to/mediaflusher
+cd /path/to/media_filter
 python scripts/run_tg_gated_download.py --min-score 7.2
 ```
 
 默认会：
 
 - 自动读取原项目的 `api_id`、`api_hash`、代理配置。
-- 自动使用 `configs/config.yaml` 里的默认 session 名 `mediaflusher_tg`。
+- 自动使用 `configs/config.yaml` 里的默认 session 名 `media_filter_tg`。
 - 只在本地默认 session 不存在时，才复制原 `.session` 到 `data/tg_session/`。
 - 自动把原项目里的聊天进度和失败重试列表写入本地状态文件。
 - 自动全局发现 `channel,supergroup,group,private`。
@@ -59,7 +59,7 @@ python scripts/run_tg_gated_download.py --min-score 7.2
 - 频道聚合统计会写入 sqlite 的 `telegram_chat_stats` 表。
 - `data/tg_cache/` 默认只保留最高分的 `100` 个媒体文件。
 
-如果做过一次新的交互式登录，只要把新的 session 固化为 `data/tg_session/mediaflusher_tg.session`，
+如果做过一次新的交互式登录，只要把新的 session 固化为 `data/tg_session/media_filter_tg.session`，
 后续脚本就会默认复用它，不需要再次输入验证码。
 
 如果原 `.session` 已失效，但你仍然想复用原配置和代理做一次新的交互式登录：
@@ -67,7 +67,7 @@ python scripts/run_tg_gated_download.py --min-score 7.2
 ```bash
 python scripts/run_tg_gated_download.py \
   --min-score 7.2 \
-  --session-name mediaflusher_tg_fresh \
+  --session-name media_filter_tg_fresh \
   --skip-legacy-session-copy
 ```
 
@@ -100,7 +100,7 @@ python scripts/run_tg_gated_download.py \
 建议先用很小的范围验证账号、代理、会话和模型都能工作：
 
 ```bash
-cd /path/to/mediaflusher
+cd /path/to/media_filter
 python scripts/run_tg_gated_download.py \
   --min-score 7.2 \
   --max-chats 1 \
@@ -113,7 +113,7 @@ python scripts/run_tg_gated_download.py \
 如果要跑完整 pipeline：
 
 ```bash
-cd /path/to/mediaflusher
+cd /path/to/media_filter
 python scripts/run_telegram_global_pipeline.py \
   --min-score 7.2
 ```

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Run the local Telegram gated download pipeline inside mediaflusher."""
+"""Run the local Telegram gated download pipeline inside media_filter."""
 
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ DEFAULT_MEDIA_ROOT = PROJECT_ROOT / "data"
 DEFAULT_TARGET_ROOT = DEFAULT_MEDIA_ROOT / "tg_target"
 DEFAULT_CACHE_ROOT = DEFAULT_MEDIA_ROOT / "tg_cache"
 DEFAULT_FLAT_LINKS_ROOT = DEFAULT_MEDIA_ROOT / "tg_flat_links"
-DEFAULT_DB_PATH = PROJECT_ROOT / "data/mediaflusher.db"
+DEFAULT_DB_PATH = PROJECT_ROOT / "data/media_filter.db"
 DEFAULT_STATE_PATH = PROJECT_ROOT / "data/tg_downloader_state.json"
 DEFAULT_SESSION_DIR = PROJECT_ROOT / "data/tg_session"
 DEFAULT_LEGACY_CONFIG = LEGACY_ROOT / "config.yaml"
@@ -140,7 +140,7 @@ def parse_args() -> argparse.Namespace:
         "--db",
         type=Path,
         default=None,
-        help="SQLite database used by mediaflusher.",
+        help="SQLite database used by media_filter.",
     )
     parser.add_argument(
         "--checkpoint",

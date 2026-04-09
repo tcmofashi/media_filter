@@ -3,7 +3,7 @@
 数据导入脚本 - 将 JSON 数据导入 SQLite 数据库
 
 Usage:
-    python scripts/import_to_db.py --train data/train.json --val data/val.json --db data/mediaflusher.db
+    python scripts/import_to_db.py --train data/train.json --val data/val.json --db data/media_filter.db
 """
 
 import json
@@ -193,7 +193,7 @@ def main():
         "--val", "-v", type=str, default="data/val.json", help="验证集 JSONL 文件路径"
     )
     parser.add_argument(
-        "--db", "-d", type=str, default="data/mediaflusher.db", help="数据库文件路径"
+        "--db", "-d", type=str, default="data/media_filter.db", help="数据库文件路径"
     )
     args = parser.parse_args()
 

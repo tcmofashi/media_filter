@@ -1,5 +1,5 @@
 [project]
-name = "mediaflusher"
+name = "media_filter"
 version = "0.1.0"
 description = "Frozen CLIP media scoring and Telegram curation toolkit"
 readme = "README.md"

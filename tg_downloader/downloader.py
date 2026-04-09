@@ -1,4 +1,4 @@
-"""Telegram global-walk gated downloader implemented inside mediaflusher."""
+"""Telegram global-walk gated downloader implemented inside media_filter."""
 
 from __future__ import annotations
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# MediaFlusher Linux 唯一入口
+# MediaFilter Linux 唯一入口
 
 set -euo pipefail
 
@@ -117,7 +117,7 @@ fi
 TOTAL_STEPS=1
 [[ "$MODE" == "all" ]] && TOTAL_STEPS=2
 STEP=0
-echo "=== MediaFlusher 启动器 (mode=${MODE}) ==="
+echo "=== MediaFilter 启动器 (mode=${MODE}) ==="
 
 if [[ "$MODE" == "all" || "$MODE" == "api" ]]; then
   STEP=$((STEP + 1))

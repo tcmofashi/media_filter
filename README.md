@@ -1,6 +1,6 @@
-# MediaFlusher
+# MediaFilter
 
-MediaFlusher is a public baseline for a Frozen CLIP scoring stack and a Telegram media curation pipeline.
+MediaFilter is a public baseline for a Frozen CLIP scoring stack and a Telegram media curation pipeline.
 
 ## Public scope
 

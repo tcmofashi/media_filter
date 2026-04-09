@@ -10,7 +10,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_ROOT = PROJECT_ROOT / "data/tg_target"
-DEFAULT_DB_PATH = PROJECT_ROOT / "data/mediaflusher.db"
+DEFAULT_DB_PATH = PROJECT_ROOT / "data/media_filter.db"
 DEFAULT_CHECKPOINT = PROJECT_ROOT / "checkpoints/checkpoint_best.pt"
 SKIP_DIR_NAMES = {"score_links", "sort"}
 
@@ -18,7 +18,7 @@ SKIP_DIR_NAMES = {"score_links", "sort"}
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Delete Telegram media already scored by mediaflusher when the score is "
+            "Delete Telegram media already scored by media_filter when the score is "
             "below a threshold."
         )
     )
