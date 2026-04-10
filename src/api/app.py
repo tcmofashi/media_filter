@@ -22,14 +22,15 @@ async def lifespan(app: FastAPI):
     # Startup: Initialize database
     await db.init()
     logger.info("Database initialized successfully")
-    
+
     # Startup: Initialize task queue
     from src.services.task_queue import task_queue
+
     await task_queue.start()
     logger.info("Task queue started successfully")
-    
+
     yield
-    
+
     # Shutdown: Stop task queue
     await task_queue.stop()
     logger.info("Task queue stopped")
@@ -37,15 +38,16 @@ async def lifespan(app: FastAPI):
     # Shutdown: Stop background pipeline jobs
     await pipeline_job_manager.shutdown()
     logger.info("Pipeline job manager stopped")
-    
+
     # Shutdown: Close database connection
     await db.close()
     logger.info("Database connection closed")
 
+
 def create_app() -> FastAPI:
     """Create and configure FastAPI application"""
     app = FastAPI(
-        title="MediaFilter API",
+        title="XPfilter API",
         description="Frozen CLIP media scoring and Telegram curation API",
         version="0.1.0",
         lifespan=lifespan,

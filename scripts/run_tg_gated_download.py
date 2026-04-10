@@ -19,7 +19,7 @@ DEFAULT_MEDIA_ROOT = PROJECT_ROOT / "data"
 DEFAULT_TARGET_ROOT = DEFAULT_MEDIA_ROOT / "tg_target"
 DEFAULT_CACHE_ROOT = DEFAULT_MEDIA_ROOT / "tg_cache"
 DEFAULT_FLAT_LINKS_ROOT = DEFAULT_MEDIA_ROOT / "tg_flat_links"
-DEFAULT_DB_PATH = PROJECT_ROOT / "data/media_filter.db"
+DEFAULT_DB_PATH = PROJECT_ROOT / "data/xpfilter.db"
 DEFAULT_STATE_PATH = PROJECT_ROOT / "data/tg_downloader_state.json"
 DEFAULT_SESSION_DIR = PROJECT_ROOT / "data/tg_session"
 DEFAULT_LEGACY_CONFIG = LEGACY_ROOT / "config.yaml"
@@ -284,11 +284,17 @@ def main() -> int:
     )
 
     project_config = load_project_telegram_config(args.project_config)
-    checkpoint = get_config_path(args.checkpoint, project_config, "checkpoint", DEFAULT_CHECKPOINT)
+    checkpoint = get_config_path(
+        args.checkpoint, project_config, "checkpoint", DEFAULT_CHECKPOINT
+    )
     if not checkpoint.exists():
         raise FileNotFoundError(f"Checkpoint not found: {checkpoint}")
 
-    from tg_downloader.downloader import DownloadConfig, parse_chat_types, run_gated_download
+    from tg_downloader.downloader import (
+        DownloadConfig,
+        parse_chat_types,
+        run_gated_download,
+    )
     from tg_downloader.legacy import (
         bootstrap_session_from_legacy,
         bootstrap_state_from_legacy,
@@ -319,8 +325,10 @@ def main() -> int:
         "TG_SESSION_STRING",
         "TELEGRAM_SESSION_STRING",
     )
-    session_name = get_config_value(args.session_name, project_config, "session_name") or (
-        legacy.session_path.stem if legacy.session_path is not None else "media_filter_tg"
+    session_name = get_config_value(
+        args.session_name, project_config, "session_name"
+    ) or (
+        legacy.session_path.stem if legacy.session_path is not None else "xpfilter_tg"
     )
 
     if api_id is None:
@@ -332,18 +340,28 @@ def main() -> int:
             "Missing Telegram api_hash. Pass --api-hash, set TG_API_HASH, or provide legacy config."
         )
 
-    target_root = get_config_path(args.target_root, project_config, "target_root", DEFAULT_TARGET_ROOT)
-    cache_root = get_config_path(args.cache_root, project_config, "cache_root", DEFAULT_CACHE_ROOT)
+    target_root = get_config_path(
+        args.target_root, project_config, "target_root", DEFAULT_TARGET_ROOT
+    )
+    cache_root = get_config_path(
+        args.cache_root, project_config, "cache_root", DEFAULT_CACHE_ROOT
+    )
     flat_links_root = resolve_path(
         get_config_value(args.flat_links_root, project_config, "flat_links_root"),
         default=DEFAULT_FLAT_LINKS_ROOT,
         project_root=PROJECT_ROOT,
     )
-    state_path = get_config_path(args.state_path, project_config, "state_path", DEFAULT_STATE_PATH)
+    state_path = get_config_path(
+        args.state_path, project_config, "state_path", DEFAULT_STATE_PATH
+    )
     db_path = get_config_path(args.db, project_config, "db", DEFAULT_DB_PATH)
-    session_dir = get_config_path(args.session_dir, project_config, "session_dir", DEFAULT_SESSION_DIR)
+    session_dir = get_config_path(
+        args.session_dir, project_config, "session_dir", DEFAULT_SESSION_DIR
+    )
     device = str(get_config_value(args.device, project_config, "device", "auto"))
-    target_mode = get_config_value(args.target_mode, project_config, "target_mode", "hardlink")
+    target_mode = get_config_value(
+        args.target_mode, project_config, "target_mode", "hardlink"
+    )
     discover_chat_types = get_config_value(
         args.discover_chat_types,
         project_config,
@@ -351,29 +369,45 @@ def main() -> int:
         "channel,supergroup,group,private",
     )
     log_every = int(get_config_value(args.log_every, project_config, "log_every", 25))
-    chat_batch_size = int(get_config_value(args.chat_batch_size, project_config, "chat_batch_size", 150))
+    chat_batch_size = int(
+        get_config_value(args.chat_batch_size, project_config, "chat_batch_size", 150)
+    )
     message_concurrency = int(
-        get_config_value(args.message_concurrency, project_config, "message_concurrency", 3)
+        get_config_value(
+            args.message_concurrency, project_config, "message_concurrency", 3
+        )
     )
     score_concurrency = int(
         get_config_value(args.score_concurrency, project_config, "score_concurrency", 2)
     )
-    cache_max_items = int(get_config_value(args.cache_max_items, project_config, "cache_max_items", 100))
+    cache_max_items = int(
+        get_config_value(args.cache_max_items, project_config, "cache_max_items", 100)
+    )
     chat_idle_seconds = float(
-        get_config_value(args.chat_idle_seconds, project_config, "chat_idle_seconds", 2.0)
+        get_config_value(
+            args.chat_idle_seconds, project_config, "chat_idle_seconds", 2.0
+        )
     )
     round_idle_seconds = float(
-        get_config_value(args.round_idle_seconds, project_config, "round_idle_seconds", 30.0)
+        get_config_value(
+            args.round_idle_seconds, project_config, "round_idle_seconds", 30.0
+        )
     )
-    continuous = bool(get_config_value(args.continuous, project_config, "continuous", True))
-    breadth_rounds = int(get_config_value(args.breadth_rounds, project_config, "breadth_rounds", 3))
+    continuous = bool(
+        get_config_value(args.continuous, project_config, "continuous", True)
+    )
+    breadth_rounds = int(
+        get_config_value(args.breadth_rounds, project_config, "breadth_rounds", 3)
+    )
     focus_top_chats = int(
         get_config_value(args.focus_top_chats, project_config, "focus_top_chats", 5)
     )
     focus_min_scored = int(
         get_config_value(args.focus_min_scored, project_config, "focus_min_scored", 5)
     )
-    min_score = float(get_config_value(args.min_score, project_config, "min_score", 7.0))
+    min_score = float(
+        get_config_value(args.min_score, project_config, "min_score", 7.0)
+    )
     skip_legacy_session_copy = get_config_bool(
         args.skip_legacy_session_copy,
         project_config,

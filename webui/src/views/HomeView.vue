@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <h1>MediaFilter</h1>
+    <h1>XPfilter</h1>
     <p>Media scoring and labeling system</p>
   </div>
 </template>

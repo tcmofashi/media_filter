@@ -20,7 +20,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from src.models.frozen_clip_engine import FrozenClipEngine
 
 DEFAULT_ROOT = PROJECT_ROOT / "data/tg_target"
-DEFAULT_DB_PATH = PROJECT_ROOT / "data/media_filter.db"
+DEFAULT_DB_PATH = PROJECT_ROOT / "data/xpfilter.db"
 DEFAULT_CHECKPOINT = PROJECT_ROOT / "checkpoints/checkpoint_best.pt"
 GENERATED_ENTRY_PATTERN = re.compile(r"^\d+(?:\.\d+)?_")
 SKIPPED_DIR_NAMES = {"score_links"}
@@ -244,14 +244,18 @@ def write_result(
             time.sleep(WRITE_RETRY_BASE_DELAY * (attempt + 1))
 
 
-def insert_media_file(conn: sqlite3.Connection, media_path: str, media_type: str) -> None:
+def insert_media_file(
+    conn: sqlite3.Connection, media_path: str, media_type: str
+) -> None:
     conn.execute(
         "INSERT OR IGNORE INTO media_files (path, file_type) VALUES (?, ?)",
         (media_path, media_type),
     )
 
 
-def get_inference_by_path(conn: sqlite3.Connection, media_path: str) -> sqlite3.Row | None:
+def get_inference_by_path(
+    conn: sqlite3.Connection, media_path: str
+) -> sqlite3.Row | None:
     cursor = conn.execute(
         "SELECT * FROM media_inference WHERE media_path = ?",
         (media_path,),
@@ -518,11 +522,7 @@ def main() -> int:
             min_score=args.min_score,
         )
         conn.close()
-        print(
-            "[done] "
-            f"refresh_sort_only=1 "
-            f"top_k_written={len(manifest)}"
-        )
+        print(f"[done] refresh_sort_only=1 top_k_written={len(manifest)}")
         return 0
 
     engine = FrozenClipEngine(device=args.device)

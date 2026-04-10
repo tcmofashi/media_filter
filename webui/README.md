@@ -1,4 +1,4 @@
-# MediaFilter WebUI
+# XPfilter WebUI
 
 This is the shipped frontend for the public baseline pipeline.
 

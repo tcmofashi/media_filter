@@ -1,46 +1,53 @@
-# MediaFilter
+# XPfilter
 
-[中文文档](./README_CN.md)
+XPfilter is a **Telegram (and potentially more platforms in the future) / media downloading pipeline with scorer-based filtering**.
 
-**MediaFilter** is a public baseline for a frozen CLIP scoring system and Telegram media curation pipeline.  
-Repository: `https://github.com/tcmofashi/media_filter`
+Its core idea is: **download candidate media as broadly as possible, score each item one by one with a scorer, and only materialize content that reaches the threshold into the target media library**.
 
-- [Project Overview](#project-overview)
-- [Quick Start](#quick-start)
-- [Core Features](#core-features)
-- [Pipeline](#pipeline)
-- [One-Command Entry](#one-command-entry)
-- [CLI Entrypoints](#cli-entrypoints)
-- [Configuration](#configuration)
-- [Project Structure](#project-structure)
-- [Security & Distribution Scope](#security--distribution-scope)
-- [Documentation](#documentation)
-- [License](#license)
+## What this project is really for
 
-## Project Overview
+This project provides a complete toolchain covering labeling, training, inference, and the downloader.
 
-MediaFilter focuses on a minimal, production-style baseline:
+The full workflow is:
 
-- Frozen CLIP training and inference
-- Telegram gated media discovery + download + scoring pipeline
-- Re-bucketing and pruning by score
-- Lightweight API and WebUI for labeling and pipeline orchestration
+1. Use the WebUI labeling tool to import and preview media from a specified folder, label them directly, store the labeling results in the database, and export them at any time.
+2. Once the number of labeled items exceeds 1000 and you believe the high-score / low-score distribution is reasonably balanced, you can export to `labels.json` and run training. Training will produce a scorer aligned with your own labels.
+3. The project provides multiple inference scripts that can create score-based soft-link buckets for local folders, helping you directly stratify content into layers like “which files in this folder I like” and “which files I do not like.” This can also be used to evaluate whether your scoring model matches your expectations.
+4. The project inherits a Telegram downloader. The downloader continuously downloads all media files available to the account, then filters them locally through the scorer and keeps only media above a specific threshold, enabling preference-based high-quality media downloading.
 
-Historical experiment artifacts have been removed from the open-source package (such as early Heretic trials, LoRA pipelines, and large-model inference routes).
+The core is:
 
-## Quick Start
+> **Use a scorer to drive download filtering and automatically build a cleaner, higher-quality media collection.**
 
-### 1) Environment
+
+## How to use it
+
+**The most suitable way to use this project is to connect it to an agent and let the agent provide the commands and instructions for each stage. The documentation in this project is very sufficient for agents.**
+
+
+## Repository structure
+
+```text
+configs/        runtime and training config
+docs/           detailed documentation
+scripts/        training / download / rebucket / cleanup scripts
+src/            API, model, training, storage, services
+tg_downloader/  Telegram gated download implementation
+tests/          tests
+webui/          frontend labeling and pipeline UI
+```
+
+## Quick start
+
+### Install dependencies
 
 ```bash
-git clone https://github.com/tcmofashi/media_filter.git
-cd media_filter
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-WebUI dependencies:
+Before starting the frontend for the first time, install frontend dependencies:
 
 ```bash
 cd webui
@@ -48,108 +55,78 @@ npm install
 cd ..
 ```
 
-### 2) Start services
+### Start backend + WebUI
 
 ```bash
 ./start.sh
 ```
 
-- `./start.sh` starts backend API + WebUI
-- `./start.sh api` starts backend only
-- `./start.sh frontend` starts WebUI only
-- `./start.sh --build-webui` runs frontend build + preview mode
-- `./start.sh --del-cache` clears local cache before start
+Optional modes:
+
+- `./start.sh api`
+- `./start.sh frontend`
+- `./start.sh --build-webui`
+- `./start.sh --del-cache`
 
 Default ports:
 
-- API: `31211`
-- WebUI: `31212`
+- backend: `31211`
+- frontend: `31212`
 
-### 3) Verify
+## Typical usage path
 
-- Open API docs: `http://localhost:31211/docs`
-- Open pipeline UI: `http://localhost:31212`
-- Labeling: `http://localhost:31212/label`
-- Job panel: `http://localhost:31212/pipeline`
+### 1. Label data
 
-## Core Features
+Open:
 
-- Labeling and score export in WebUI (`SKILL.md` for step-by-step workflow)
-- Local SQLite media scoring/tracking metadata
-- Frozen CLIP trainer: `scripts/train_frozen_clip.py`
-- Telegram gated media download: `scripts/run_tg_gated_download.py`
-- Full end-to-end orchestration: `scripts/run_telegram_global_pipeline.py`
-- Re-score/rebucket/prune utilities for ranked media
+- `http://localhost:31212/label`
 
-## Pipeline
+Export `labels.json`.
 
-Typical pipeline flow:
+### 2. Train the scorer
 
-1. Label data in WebUI and export `labels.json`.
-2. Train/resume Frozen CLIP with `scripts/train_frozen_clip.py`.
-3. Execute Telegram gated download: `scripts/run_tg_gated_download.py`.
-4. Optional full orchestration:
-   `scripts/run_telegram_global_pipeline.py` (download → score → rebucket → prune).
-5. Materialize scored outputs to `target_root` and browse via media endpoints.
+```bash
+python scripts/train_frozen_clip.py \
+  --labels_path labels.json \
+  --output_dir checkpoints/frozen_clip \
+  --epochs 10 \
+  --batch_size 16 \
+  --learning_rate 1e-4 \
+  --clip_model_name openai/clip-vit-large-patch14
+```
 
-Score threshold and batch behaviors are configured in `configs/config.yaml` and command arguments.
+### 3. Run gated download
 
-## One-Command Entry
+```bash
+python scripts/run_tg_gated_download.py --min-score 7.0
+```
 
-Use `start.sh` as the unified Linux entrypoint:
+### 4. Run the full Telegram pipeline
 
-- Backend: `src/main.py` via FastAPI
-- Frontend: `webui` (Vite dev server)
-- Shared shutdown handler for all processes
+```bash
+python scripts/run_telegram_global_pipeline.py --min-score 7.0
+```
 
-This project intentionally uses a single shell entry for running local demo stack.
+The full orchestration can run, in order:
 
-## CLI Entrypoints
+1. Telegram gated download
+2. Optional backfill inference
+3. Score-based rebucketing
+4. Optional cleanup of files below the threshold
 
-- Training: `scripts/train_frozen_clip.py`
-- Import labels to DB (optional): `scripts/import_to_db.py`
-- Single pass download: `scripts/run_tg_gated_download.py`
-- Full Telegram pipeline: `scripts/run_telegram_global_pipeline.py`
-- Bulk re-score: `scripts/bulk_infer_telegram.py`
-- Re-bucket: `scripts/rebucket_telegram_by_score.py`
-- Prune low-score: `scripts/prune_telegram_below_score.py`
-- Data split helper: `scripts/split_dataset.py`
-- Label export/API: `src/api/routes/label.py`, `src/api/routes/export.py`
+## Notes
 
-## Configuration
+- This repository publishes the baseline implementation of **Frozen CLIP scoring + Telegram gated download + API/WebUI**.
+- Model checkpoints, Telegram sessions, local databases, and downloaded data are not distributed with the repository.
+- The current filtering mechanism is **post-download filtering**, because the model must first receive the complete file before it can score it.
+- You should distinguish `cache_root` and `target_root`: low-score media may still remain in the cache layer, but by default only passing results are materialized into the target media library.
+- Although the repository includes training code, the final system-level goal is still:
 
-- Runtime config: `src/config.py`
-- Public defaults: `configs/config.yaml`
-- Local override: `configs/config.local.yaml` (gitignored or optional)
-- Environment variables: prefix `MF_` (`MF_MODEL_CHECKPOINT`, etc.)
+> **A scorer-driven download filter, rather than a standalone training experiment repository.**
 
-## Project Structure
+## Related docs
 
-- `src/`: API, services, storage, models, training code
-- `scripts/`: CLI orchestration and pipeline scripts
-- `tg_downloader/`: Telegram downloader implementation
-- `webui/`: Frontend for labeling and pipeline operations
-- `docs/`: Pipeline and model documentation
-- `data/`: Runtime data dirs (gitignored)
-- `configs/`: Runtime and deepspeed configurations
-
-## Security & Distribution Scope
-
-Not distributed in this repository:
-
-- Pretrained model checkpoints
-- Telegram session files
-- Local DB/cache/download outputs
-- Local override config (`configs/config.local.yaml`)
-
-These paths are ignored via `.gitignore`.
-
-## Documentation
-
-- Operational Guide: [`SKILL.md`](./SKILL.md)
-- Telegram Pipeline: `docs/telegram_global_pipeline.md`
-- Model and training details: `docs/frozen_clip_model.md`
-
-## License
-
-This project is licensed under the [MIT License](./LICENSE).
+- `docs/frozen_clip_model.md`
+- `docs/telegram_global_pipeline.md`
+- `progress.md`
+- `SKILL.md`

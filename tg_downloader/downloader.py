@@ -1,4 +1,4 @@
-"""Telegram global-walk gated downloader implemented inside media_filter."""
+"""Telegram global-walk gated downloader implemented inside XPfilter."""
 
 from __future__ import annotations
 
@@ -351,7 +351,9 @@ def build_flat_target_path(
     score_prefix: float | None = None,
 ) -> Path:
     """Build one flat output path under the cross-chat symlink directory."""
-    return root / build_flat_relative_path(message, candidate, score_prefix=score_prefix)
+    return root / build_flat_relative_path(
+        message, candidate, score_prefix=score_prefix
+    )
 
 
 def build_score_prefixed_relative_path(
@@ -359,7 +361,9 @@ def build_score_prefixed_relative_path(
     score_prefix: float,
 ) -> Path:
     """Attach one score prefix to an existing cache/target relative path."""
-    return relative.with_name(f"{format_score_prefix(score_prefix)}{strip_score_prefix(relative.name)}")
+    return relative.with_name(
+        f"{format_score_prefix(score_prefix)}{strip_score_prefix(relative.name)}"
+    )
 
 
 def sync_target_root(
@@ -384,7 +388,9 @@ def sync_target_root(
         except ValueError:
             continue
 
-        target_path = config.save_root / build_score_prefixed_relative_path(relative, score)
+        target_path = config.save_root / build_score_prefixed_relative_path(
+            relative, score
+        )
         canonical_target_path = config.save_root / relative
         delete_target_variants(
             canonical_target_path,
@@ -421,17 +427,24 @@ def sync_flat_links_root(
     removed = 0
     expected_paths: set[Path] = set()
     for target_path in sorted(
-        path for path in config.save_root.rglob("*") if path.is_file() or path.is_symlink()
+        path
+        for path in config.save_root.rglob("*")
+        if path.is_file() or path.is_symlink()
     ):
         relative = target_path.relative_to(config.save_root)
         match = SCORE_PREFIX_RE.match(relative.name)
         if match is None:
             continue
         score = float(match.group(0)[:-2])
-        canonical_flat_path = config.flat_links_root / build_flat_relative_path_from_relative(relative)
-        flat_target_path = config.flat_links_root / build_flat_relative_path_from_relative(
-            relative,
-            score_prefix=score,
+        canonical_flat_path = (
+            config.flat_links_root / build_flat_relative_path_from_relative(relative)
+        )
+        flat_target_path = (
+            config.flat_links_root
+            / build_flat_relative_path_from_relative(
+                relative,
+                score_prefix=score,
+            )
         )
         expected_paths.add(flat_target_path)
         delete_target_variants(
@@ -457,7 +470,9 @@ def sync_flat_links_root(
             )
 
     for flat_path in sorted(
-        path for path in config.flat_links_root.iterdir() if path.is_file() or path.is_symlink()
+        path
+        for path in config.flat_links_root.iterdir()
+        if path.is_file() or path.is_symlink()
     ):
         if flat_path in expected_paths:
             continue
@@ -601,9 +616,7 @@ def cache_evict_sort_key(row: dict[str, object]) -> tuple[float, float, str]:
 def list_cache_files(cache_root: Path) -> list[Path]:
     """List all current cache files on disk."""
     return sorted(
-        path
-        for path in cache_root.rglob("*")
-        if path.is_file() or path.is_symlink()
+        path for path in cache_root.rglob("*") if path.is_file() or path.is_symlink()
     )
 
 
@@ -1225,9 +1238,7 @@ async def collect_chat_batch(
     )
     media_batch_limit = max(1, int(config.chat_batch_size))
     history_limit = (
-        max(1, int(config.history_limit))
-        if config.history_limit is not None
-        else None
+        max(1, int(config.history_limit)) if config.history_limit is not None else None
     )
 
     messages: list[pyrogram.types.Message] = []
@@ -1269,9 +1280,7 @@ async def collect_chat_batch(
         return messages
 
     history_remaining = (
-        max(0, history_limit - len(messages))
-        if history_limit is not None
-        else None
+        max(0, history_limit - len(messages)) if history_limit is not None else None
     )
     if history_remaining == 0:
         return messages
@@ -1302,7 +1311,9 @@ def can_evict_cache_entry(
     content_hash = str(row.get("content_hash") or "")
     if not content_hash:
         return True
-    return not store.has_existing_media_with_hash_under_root(content_hash, config.save_root)
+    return not store.has_existing_media_with_hash_under_root(
+        content_hash, config.save_root
+    )
 
 
 def resolve_cache_max_items(
@@ -1422,11 +1433,7 @@ async def process_chat_batch(
         protected_seen=chat_state.protected_processed_count,
         last_read=chat_state.last_read_message_id,
         retry=len(chat_state.failed_message_ids),
-        avg=(
-            f"{chat_state.avg_score:.4f}"
-            if chat_state.scored_count > 0
-            else "na"
-        ),
+        avg=(f"{chat_state.avg_score:.4f}" if chat_state.scored_count > 0 else "na"),
         stage=stage,
     )
 
@@ -1533,9 +1540,7 @@ async def process_chat_batch(
         protected=int(chat_state.has_protected_content),
         protected_seen=chat_state.protected_processed_count,
         chat_avg=(
-            f"{chat_state.avg_score:.4f}"
-            if chat_state.scored_count > 0
-            else "na"
+            f"{chat_state.avg_score:.4f}" if chat_state.scored_count > 0 else "na"
         ),
         cache_items=len(list_cache_files(config.cache_root)),
     )
@@ -1712,7 +1717,9 @@ async def _run_async(config: DownloadConfig) -> RunStats:
                 )
                 continue
             stats.chats_discovered = len(dialogs)
-            breadth_dialogs = order_dialogs_for_breadth(dialogs, state, config.max_chats)
+            breadth_dialogs = order_dialogs_for_breadth(
+                dialogs, state, config.max_chats
+            )
             round_processed = 0
 
             print_progress(
@@ -1740,7 +1747,9 @@ async def _run_async(config: DownloadConfig) -> RunStats:
                         round_processed += 1
                 except Exception as exc:  # pylint: disable=broad-except
                     error_text = format_exception(exc)
-                    chat_state = state.get_chat(dialog.chat_id, dialog.title, dialog.chat_type)
+                    chat_state = state.get_chat(
+                        dialog.chat_id, dialog.title, dialog.chat_type
+                    )
                     chat_state.last_error = error_text
                     persist_chat_stats(store, state, dialog.chat_id)
                     state.save()
@@ -1779,18 +1788,20 @@ async def _run_async(config: DownloadConfig) -> RunStats:
                             client=client,
                             dialog=dialog,
                             config=config,
-                        state=state,
-                        store=store,
-                        engine=engine,
-                        stats=stats,
-                        score_semaphore=score_semaphore,
-                        stage="focus",
-                    )
+                            state=state,
+                            store=store,
+                            engine=engine,
+                            stats=stats,
+                            score_semaphore=score_semaphore,
+                            stage="focus",
+                        )
                         if stats.chat_batches > before_batches:
                             round_processed += 1
                     except Exception as exc:  # pylint: disable=broad-except
                         error_text = format_exception(exc)
-                        chat_state = state.get_chat(dialog.chat_id, dialog.title, dialog.chat_type)
+                        chat_state = state.get_chat(
+                            dialog.chat_id, dialog.title, dialog.chat_type
+                        )
                         chat_state.last_error = error_text
                         persist_chat_stats(store, state, dialog.chat_id)
                         state.save()

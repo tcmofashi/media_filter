@@ -1,4 +1,4 @@
-# MediaFilter 使用 Skill
+# XPfilter 使用 Skill
 
 这份 Skill 说明如何从标注到部署，完成仓库公开基线的全链路跑通。
 
@@ -75,7 +75,7 @@ cp configs/config.yaml configs/config.local.yaml
 - 数据导入到本地 sqlite（可选）：
 
 ```bash
-python scripts/import_to_db.py --train data/train.json --val data/val.json --db data/media_filter.db
+python scripts/import_to_db.py --train data/train.json --val data/val.json --db data/xpfilter.db
 ```
 
 如果你已经有 `labels.json`，可按项目既有脚本做切分后再入库。

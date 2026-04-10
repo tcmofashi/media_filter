@@ -11,7 +11,7 @@ import re
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 DEFAULT_ROOT = PROJECT_ROOT / "data/tg_target"
-DEFAULT_DB_PATH = PROJECT_ROOT / "data/media_filter.db"
+DEFAULT_DB_PATH = PROJECT_ROOT / "data/xpfilter.db"
 DEFAULT_CHECKPOINT = PROJECT_ROOT / "checkpoints/checkpoint_best.pt"
 SCORE_PREFIX_PATTERN = re.compile(r"^\d+(?:\.\d+)?_")
 
@@ -104,9 +104,7 @@ def build_target_path(
         return candidate
 
     index = 2
-    while candidate in reserved_targets or (
-        candidate.exists() and candidate != source
-    ):
+    while candidate in reserved_targets or (candidate.exists() and candidate != source):
         candidate = bucket_dir / f"{prefix}_{clean_name}_{index}{source.suffix}"
         index += 1
 
@@ -284,12 +282,7 @@ def main() -> int:
         conn.commit()
     conn.close()
 
-    print(
-        "[done] "
-        f"materialized={materialized} "
-        f"skipped={skipped} "
-        f"missing={missing}"
-    )
+    print(f"[done] materialized={materialized} skipped={skipped} missing={missing}")
 
     if args.mode == "move" and not args.dry_run and not args.skip_sort_refresh:
         refresh_code = refresh_sort(PROJECT_ROOT)
